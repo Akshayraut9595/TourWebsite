@@ -123,4 +123,70 @@ export const getAllTour = async(req,res)=>{
         });
         
     }
+};
+
+// get tour by search
+
+export const getTourBySearch  = async(req,res) =>{
+
+    // i means case senesitive
+    const city  = new RegExp(req.query.city, 'i') 
+    const distance = parseInt(req.query.distance)
+    const maxGroupSize = parseInt(req.query.maxGroupSize)
+
+    try{
+
+        // gte means greater than equal
+        const tours = await Tour.find({city,distance :{$gte:distance},
+        maxGroupSize:{$gte:maxGroupSize} })
+
+        res.status(200).json({
+            success:true,
+            message:'successfull , Here is the tour that you require ',
+            data:tours,
+        });
+
+    } catch(err){
+        res.status(404).json({
+            success:false,
+            message:'Not Found',
+        });
+    }
+}
+
+
+// get featured Tour tour
+export const getFeaturedTour = async(req,res)=>{
+
+    try{
+
+        const tours = await Tour.find({featured:true}).limit(8);
+
+        res.status(200).json({
+            success:true,
+            message:'These are all the Tours that you are looking for ',
+            data:tours,
+        });
+
+    } catch(err){
+        res.status(404).json({
+            success:false,
+            message:'Not Found',
+        });
+        
+    }
+};
+
+// get tour counts
+export const getTourCount = async(req,res)=>{
+
+    try{
+        const tourCount = await Tour.estimatedDocumentCount()
+
+        res.status(200).json({success:true,data: tourCount})
+    }catch(err)
+    {
+        res.status(500).json({success: false,message:"failed to fetch"});
+
+    }
 }
